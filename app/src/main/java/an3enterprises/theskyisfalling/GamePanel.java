@@ -3,6 +3,7 @@ package an3enterprises.theskyisfalling;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
@@ -15,6 +16,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private Point playerPoint;
     private Player player;
+
+    private Paint text;
 
     private boolean moveSkyBlockOne = false, moveSkyBlockTwo = false, moveSkyBlockThree = false, moveSkyBlockFour = false, moveSkyBlockFive  = false,
             moveSkyBlockSix = false, moveSkyBlockSeven = false;
@@ -40,6 +43,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private Point skyBlockSevenPoint;
     private SkyBlockSeven skyBlockSeven;
+
+    public static int blocksDodged = 0;
 
     private Grass grass;
     private Point grassPoint;
@@ -72,6 +77,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         thread = new MainThread(getHolder(), this);
 
         player = new Player(new Rect(100, 100, 200, 200), Color.rgb(160, 0, 160));
+
+        text = new Paint();
+
+        text.setColor(Color.argb(255, 0, 0, 0));
+        text.setTextSize(40);
 
         playerPoint = new Point(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT - 400);
 
@@ -137,6 +147,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawColor(Color.WHITE);
 
+
+
         player.draw(canvas);
 
         skyBlockOne.draw(canvas);
@@ -149,6 +161,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 
         grass.draw(canvas);
+
+        canvas.drawText(blocksDodged + " SkyBlocks Dodged", Constants.SCREEN_WIDTH + 100, Constants.SCREEN_HEIGHT / 4, text);
 
     }
 
@@ -175,6 +189,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockOne) {
             skyBlockOne.incrementY(10);
             if (skyBlockOne.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockOne.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockOne.update(subtract(skyBlockOnePoint, subtract));
                 moveSkyBlockOne = false;
@@ -183,6 +198,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockTwo) {
             skyBlockTwo.incrementY(10);
             if (skyBlockTwo.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockTwo.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockTwo.update(subtract(skyBlockTwoPoint, subtract));
                 moveSkyBlockTwo = false;
@@ -191,6 +207,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockThree) {
             skyBlockThree.incrementY(10);
             if (skyBlockThree.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockThree.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockThree.update(subtract(skyBlockThreePoint, subtract));
                 moveSkyBlockThree = false;
@@ -199,6 +216,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockFour) {
             skyBlockFour.incrementY(10);
             if (skyBlockFour.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockFour.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockFour.update(subtract(skyBlockFourPoint, subtract));
                 moveSkyBlockFour = false;
@@ -207,6 +225,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockFive) {
             skyBlockFive.incrementY(10);
             if (skyBlockFive.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockFive.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockFive.update(subtract(skyBlockFivePoint, subtract));
                 moveSkyBlockFive = false;
@@ -215,6 +234,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockSix) {
             skyBlockSix.incrementY(10);
             if (skyBlockSix.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockSix.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockSix.update(subtract(skyBlockSixPoint, subtract));
                 moveSkyBlockSix = false;
@@ -223,6 +243,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (moveSkyBlockSeven) {
             skyBlockSeven.incrementY(10);
             if (skyBlockSeven.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockSeven.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
+                blocksDodged += 1;
                 Point subtract = new Point(0, 100);
                 skyBlockSeven.update(subtract(skyBlockSevenPoint, subtract));
                 moveSkyBlockSeven = false;
@@ -231,12 +252,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         currentTime = System.currentTimeMillis();
 
         elapsedTime = (currentTime - startTime) / 1000;
-        int randomBlocks = (int) (Math.random() * 21 + 0);
+        int randomBlocks = (int) (Math.random() * 8 + 0);
         System.out.println("Elapsed time: " + elapsedTime + "  randomBlock: " + randomBlocks);
 
 
         if (elapsedTime == 1) {
             startTime = System.currentTimeMillis();
+
+            if(randomBlocks == 1) {
+                moveSkyBlockOne = true;
+            }
             switch (randomBlocks) {
                 case 0:
 
