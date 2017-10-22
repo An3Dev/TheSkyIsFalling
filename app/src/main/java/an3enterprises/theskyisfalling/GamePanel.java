@@ -19,7 +19,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private Rect r = new Rect();
 
-    private Paint score, gameOverText;
+    private Paint score, gameOverText, speedText;
 
     private boolean moveSkyBlockOne = false, moveSkyBlockTwo = false, moveSkyBlockThree = false, moveSkyBlockFour = false, moveSkyBlockFive  = false,
             moveSkyBlockSix = false, moveSkyBlockSeven = false;
@@ -49,6 +49,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Point originalPlayerPoint, originalBlockOne, originalBlockTwo, originalBlockThree,
             originalBlockFour, originalBlockFive, originalBlockSix, originalBlockSeven;
 
+    private long startTimeGame;
+    private long currentTimeGame;
+    private long elapsedTimeGame;
+
+    public static int speed = 10;
+
     public static int blocksDodged = 0;
 
     private Grass grass;
@@ -64,6 +70,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     int tapThreeToRestart = 0;
 
+    int randomBlocks;
+
 
     Context context;
 
@@ -73,7 +81,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     long startTime;
     long currentTime;
-    long elapsedTime;
+    float elapsedTime;
 
 
     public GamePanel(Context context) {
@@ -89,12 +97,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         score = new Paint();
         gameOverText = new Paint();
+        speedText = new Paint();
 
         score.setColor(Color.argb(255, 0, 0, 0));
         score.setTextSize(50);
 
         gameOverText.setColor(Color.argb(255, 0, 0, 0));
         gameOverText.setTextSize(70);
+
+        speedText.setColor(Color.argb(255, 0, 0, 0));
+        speedText.setTextSize(70);
 
         playerPoint = new Point(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT - 400);
 
@@ -140,6 +152,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
 
         startTime = System.currentTimeMillis();
+
+        startTimeGame = System.currentTimeMillis();
     }
 
     @Override
@@ -171,6 +185,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         grass.draw(canvas);
 
+        canvas.drawText((speed * 10) + "mph", Constants.SCREEN_WIDTH - 300, Constants.SCREEN_HEIGHT - 150, speedText);
+
         canvas.drawText(blocksDodged + " SkyBlocks Dodged", 100, Constants.SCREEN_HEIGHT - 150, score);
         if (gameOver) {
             gameOverText.setColor(Color.argb(255, 0, 0, 0));
@@ -190,7 +206,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         int cWidth = r.width();
         paint.getTextBounds(text, 0, text.length(), r);
         float x = cWidth / 2f - r.width() / 2f - r.left;
-        float y = cHeight / 2f + r.height() / 2f - r.bottom;
+        float y = 1 * cHeight / 4f + r.height() / 2f - r.bottom;
         canvas.drawText(text, x, y, paint);
     }
 
@@ -230,10 +246,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         skyBlockSix.update(skyBlockSixPoint);
         skyBlockSeven.update(skyBlockSevenPoint);
 
+        moveSkyBlockOne = false;
+        moveSkyBlockTwo = false;
+        moveSkyBlockThree = false;
+        moveSkyBlockFour = false;
+        moveSkyBlockFive = false;
+        moveSkyBlockSix = false;
+        moveSkyBlockSeven = false;
+
+        randomBlocks = 0;
+        speed = 10;
+
         movingPlayer = false;
         gameOver = false;
 
         startTime = System.currentTimeMillis();
+
+        startTimeGame = System.currentTimeMillis();
     }
 
     public boolean playerAndSkyCollide() {
@@ -247,14 +276,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-
-        System.out.println("gameOver:" + gameOver);
-        System.out.println("movingPlayer: " + movingPlayer);
-
         if (!gameOver) {
             player.update(playerPoint);
 
-            System.out.println("Blocks dodged: " + blocksDodged);
 
 //        if (player.getRectangle().top == skyBlockOne.getRectangle().bottom
 //                || player.getRectangle().top == skyBlockTwo.getRectangle().bottom
@@ -268,76 +292,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
             if (playerAndSkyCollide()) {
                 gameOver = true;
-
-
-
             }
 
-            if (moveSkyBlockOne) {
-                skyBlockOne.incrementY(10);
-                if (skyBlockOne.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockOne.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockOne.update(skyBlockOnePoint);
-                    moveSkyBlockOne = false;
-                }
-            }
-            if (moveSkyBlockTwo) {
-                skyBlockTwo.incrementY(10);
-                if (skyBlockTwo.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockTwo.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockTwo.update(skyBlockTwoPoint);
-                    moveSkyBlockTwo = false;
-                }
-            }
-            if (moveSkyBlockThree) {
-                skyBlockThree.incrementY(10);
-                if (skyBlockThree.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockThree.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockThree.update(skyBlockThreePoint);
-                    moveSkyBlockThree = false;
-                }
-            }
-            if (moveSkyBlockFour) {
-                skyBlockFour.incrementY(10);
-                if (skyBlockFour.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockFour.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockFour.update(skyBlockFourPoint);
-                    moveSkyBlockFour = false;
-                }
-            }
-            if (moveSkyBlockFive) {
-                skyBlockFive.incrementY(10);
-                if (skyBlockFive.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockFive.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockFive.update(skyBlockFivePoint);
-                    moveSkyBlockFive = false;
-                }
-            }
-            if (moveSkyBlockSix) {
-                skyBlockSix.incrementY(10);
-                if (skyBlockSix.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockSix.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockSix.update(skyBlockSixPoint);
-                    moveSkyBlockSix = false;
-                }
-            }
-            if (moveSkyBlockSeven) {
-                skyBlockSeven.incrementY(10);
-                if (skyBlockSeven.getRectangle().bottom == Constants.SCREEN_HEIGHT - 300 || skyBlockSeven.getRectangle().bottom == Constants.SCREEN_HEIGHT - 280) {
-                    blocksDodged += 1;
-                    skyBlockSeven.update(skyBlockSevenPoint);
-                    moveSkyBlockSeven = false;
-                }
-            }
             currentTime = System.currentTimeMillis();
 
-            elapsedTime = (currentTime - startTime) / 1000;
-            int randomBlocks = (int) (Math.random() * 766 + 1);
-            System.out.println("Elapsed time: " + elapsedTime + "  randomBlock: " + randomBlocks);
+            elapsedTime = (currentTime - startTime) / 1000f;
 
-
-            if (elapsedTime == 1) {
-                System.out.println("Is elapsed time 1 ");
+            if (elapsedTime >= 0.4 && elapsedTime <= 0.6) {
+                randomBlocks = (int) (Math.random() * 76544 + 1);
                 startTime = System.currentTimeMillis();
 
                 if (randomBlocks == 1) {
@@ -346,16 +308,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 int num = randomBlocks;
                 String strNum = "" + num;
                 int strLength = strNum.length();
-                int sum = 0;
 
-                for (int i = 0; i < strLength; ++i) {
-                    int digit = Integer.parseInt(strNum.charAt(i) + "");
-                    sum += (digit * digit);
-                    System.out.println("result: " + digit);
+                for (int i = 0; i < strLength; i++) {
+                    int digit = 0;
+//                    if (i == 0 || i == 1) {
+                        digit = Integer.parseInt(strNum.charAt(i) + "");
+//                    }
+//                    int digit = 1;
                     switch (digit) {
                         case 1:
                             moveSkyBlockOne = true;
-                            System.out.println("moveSkyBlockOne");
                             break;
                         case 2:
 
@@ -367,7 +329,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                             break;
                         case 4:
 
-                            moveSkyBlockFour = true;
+                            //moveSkyBlockFour = true;
                             break;
                         case 5:
 
@@ -381,11 +343,90 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
                             moveSkyBlockSeven = true;
                             break;
+                        case 8:
+                            moveSkyBlockOne = true;
+                            break;
+                        case 9:
+                            moveSkyBlockTwo = true;
+                            break;
                     }
                 }
 
+//                System.out.println("MoveBlock1: " + moveSkyBlockOne
+//                        + " MoveBlock2: " + moveSkyBlockTwo
+//                        + " MoveBlock3: " + moveSkyBlockThree
+//                        + " MoveBlock4: " + moveSkyBlockFour
+//                        + " MoveBlock5: " + moveSkyBlockFive
+//                        + " MoveBlock6: " + moveSkyBlockSix
+//                        + " MoveBlock7: " + moveSkyBlockSeven);
+            }
 
+            currentTimeGame = System.currentTimeMillis();
+
+            elapsedTimeGame = (currentTimeGame - startTimeGame) / 1000;
+            System.out.println("ElapsedTime: " + elapsedTimeGame + " startTime: " + startTimeGame + " CurrentTime: " + currentTimeGame + " Speed: " + speed + " Modolus: " + elapsedTime % 2);
+
+//            if (elapsedTimeGame % 10 == 0.0f) {
+//                speed += 1;
+//            }
+
+            if (moveSkyBlockOne) {
+                skyBlockOne.incrementY(speed);
+                if (skyBlockOne.getRectangle().top >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockOne.update(skyBlockOnePoint);
+                    moveSkyBlockOne = false;
                 }
+            }
+            if (moveSkyBlockTwo) {
+                skyBlockTwo.incrementY(speed);
+                if (skyBlockTwo.getRectangle().top >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockTwo.update(skyBlockTwoPoint);
+                    moveSkyBlockTwo = false;
+                }
+            }
+            if (moveSkyBlockThree) {
+                skyBlockThree.incrementY(speed);
+                if (skyBlockThree.getRectangle().top >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockThree.update(skyBlockThreePoint);
+                    moveSkyBlockThree = false;
+                }
+            }
+            if (moveSkyBlockFour) {
+                skyBlockFour.incrementY(speed);
+                if (skyBlockFour.getRectangle().bottom >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockFour.update(skyBlockFourPoint);
+                    moveSkyBlockFour = false;
+                }
+            }
+            if (moveSkyBlockFive) {
+                skyBlockFive.incrementY(speed);
+                if (skyBlockFive.getRectangle().bottom >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockFive.update(skyBlockFivePoint);
+                    moveSkyBlockFive = false;
+                }
+            }
+            if (moveSkyBlockSix) {
+                skyBlockSix.incrementY(speed);
+                if (skyBlockSix.getRectangle().bottom >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockSix.update(skyBlockSixPoint);
+                    moveSkyBlockSix = false;
+                }
+            }
+            if (moveSkyBlockSeven) {
+                skyBlockSeven.incrementY(speed);
+                if (skyBlockSeven.getRectangle().bottom >= Constants.SCREEN_HEIGHT - 325) {
+                    blocksDodged += 1;
+                    skyBlockSeven.update(skyBlockSevenPoint);
+                    moveSkyBlockSeven = false;
+                }
+            }
+
             }
 //
         }
