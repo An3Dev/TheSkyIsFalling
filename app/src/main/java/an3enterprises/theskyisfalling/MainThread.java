@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 public class MainThread  extends Thread {
-    public static final int MAX_FPS = 65;
+    public static final int MAX_FPS = 62;
     private double averageFPS;
     private SurfaceHolder surfaceHolder;
     private GamePanel gamePanel;
@@ -67,7 +67,6 @@ public class MainThread  extends Thread {
                 averageFPS = 1000 / ((totalTime / frameCount) / 1000000);
                 frameCount = 0;
                 totalTime = 0;
-                System.out.println(averageFPS);
             }
         }
     }
