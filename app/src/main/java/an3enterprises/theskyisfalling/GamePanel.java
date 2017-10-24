@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -50,10 +51,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             originalBlockFour, originalBlockFive, originalBlockSix, originalBlockSeven;
 
     private long startTimeGame;
+    private long initTime;
     private long currentTimeGame;
-    private long elapsedTimeGame;
+    private float elapsedTimeGame;
 
-    public static int speed = 10;
+    public static float speed;
 
     public static int blocksDodged = 0;
 
@@ -72,6 +74,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     int randomBlocks;
 
+    private boolean increasedSpeedOnce;
 
     Context context;
 
@@ -154,6 +157,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         startTime = System.currentTimeMillis();
 
         startTimeGame = System.currentTimeMillis();
+        initTime = startTimeGame;
     }
 
     @Override
@@ -185,7 +189,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         grass.draw(canvas);
 
-        canvas.drawText((speed * 10) + "mph", Constants.SCREEN_WIDTH - 300, Constants.SCREEN_HEIGHT - 150, speedText);
+        canvas.drawText((speed) + "mph", Constants.SCREEN_WIDTH - 300, Constants.SCREEN_HEIGHT - 150, speedText);
 
         canvas.drawText(blocksDodged + " SkyBlocks Dodged", 100, Constants.SCREEN_HEIGHT - 150, score);
         if (gameOver) {
@@ -255,7 +259,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         moveSkyBlockSeven = false;
 
         randomBlocks = 0;
-        speed = 10;
 
         movingPlayer = false;
         gameOver = false;
@@ -298,13 +301,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
             elapsedTime = (currentTime - startTime) / 1000f;
 
-            if (elapsedTime >= 0.4 && elapsedTime <= 0.6) {
-                randomBlocks = (int) (Math.random() * 76544 + 1);
+            if (elapsedTime >= 1.9 && elapsedTime <= 2.1) {
+                randomBlocks = (int) (Math.random() * 7655 + 1);
+                Log.d("Debug", "randomBlocks: " + randomBlocks);
                 startTime = System.currentTimeMillis();
 
-                if (randomBlocks == 1) {
-                    moveSkyBlockOne = true;
-                }
                 int num = randomBlocks;
                 String strNum = "" + num;
                 int strLength = strNum.length();
@@ -329,7 +330,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                             break;
                         case 4:
 
-                            //moveSkyBlockFour = true;
+//                            moveSkyBlockFour = true;
                             break;
                         case 5:
 
@@ -363,12 +364,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
             currentTimeGame = System.currentTimeMillis();
 
-            elapsedTimeGame = (currentTimeGame - startTimeGame) / 1000;
-            System.out.println("ElapsedTime: " + elapsedTimeGame + " startTime: " + startTimeGame + " CurrentTime: " + currentTimeGame + " Speed: " + speed + " Modolus: " + elapsedTime % 2);
 
-//            if (elapsedTimeGame % 10 == 0.0f) {
-//                speed += 1;
-//            }
+            elapsedTimeGame = (currentTimeGame - startTimeGame) / 1000;
+
+            if (speed == 55) {
+                speed = 55;
+            }else {
+                speed = (int) (elapsedTimeGame / 2 + 10);
+            }
 
             if (moveSkyBlockOne) {
                 skyBlockOne.incrementY(speed);
