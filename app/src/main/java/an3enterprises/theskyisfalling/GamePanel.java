@@ -330,7 +330,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                             break;
                         case 4:
 
-//                            moveSkyBlockFour = true;
+                            moveSkyBlockFour = true;
                             break;
                         case 5:
 
